@@ -11,11 +11,11 @@ const About: React.FC = () => {
         Hi, my name is <HighlightSpan>Abdannasser Mbarki</HighlightSpan>.
       </p>
       <p>
-        I'm a <HighlightAlt>Software engineer</HighlightAlt> based in Tunisia.
+        I'm a <HighlightAlt>ict student in ENIG</HighlightAlt> based in Tunisia.
       </p>
       <p>
         I am passionate about reverse engineering, software developpment and <br />
-        agentic coding. I also enjoy coding, automating tasks and playing CTFs.
+        agentic systems. I also enjoy coding, problem solving and playing CTFs.
       </p>
     </AboutWrapper>
   );

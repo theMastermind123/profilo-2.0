@@ -18,7 +18,7 @@ const Education: React.FC = () => {
 const eduBg = [
   {
     title: "Communication and Network Engineering",
-    desc: "ENIG | 2024 - 2027",
+    desc: "Network Security, Web Development, Artificial Intelligence, Telecommunication, and Embedded System",
   }
 ];
 

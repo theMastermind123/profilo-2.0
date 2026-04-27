@@ -243,7 +243,7 @@ const WelcomeBrowserWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximize
                 fontSize: '1.05rem',
                 color: '#D8DEE9',
                 opacity: 0.95
-              }}>Security Researcher • Software Engineer</p>
+              }}>ICT Student in ENIG</p>
               <div role="group" aria-label="Quick links" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '12px' }}>
                 <a href="https://github.com/abdannassermbarki" target="_blank" rel="noreferrer" style={{
                   textDecoration: 'none',
@@ -292,7 +292,7 @@ const WelcomeBrowserWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximize
                 <h3 style={{ margin: 0, color: '#88C0D0', fontSize: '1.05rem' }}>Security field</h3>
               </div>
               <p style={{ margin: 0, lineHeight: 1.6 as any, color: '#D8DEE9' }}>
-                reverse engineering CTFs. Founder of the security club <strong style={{ color: '#A3BE8C' }}>Securinets ENIG</strong>.
+                Participating CTFs. Founder of the security club <strong style={{ color: '#A3BE8C' }}>Securinets ENIG</strong>.
               </p>
             </div>
 
@@ -314,7 +314,7 @@ const WelcomeBrowserWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximize
                 <h3 style={{ margin: 0, color: '#A3BE8C', fontSize: '1.05rem' }}>Professional Experience</h3>
               </div>
               <p style={{ margin: 0, lineHeight: 1.6 as any, color: '#D8DEE9' }}>
-                Software developpment, reverse engineering, game developpment, agentic systems and hosting CTFs in the cloud. <strong style={{ color: '#EBCB8B' }}>Currently focusing on software developpment</strong>. </p>
+                Software developpment, reverse engineering, game developpment, agentic systems developpment: <strong style={{ color: '#EBCB8B' }}>A multidisciplinary background in Network Engineering and Full-stack Development</strong>. </p>
             </div>
 
             <div
@@ -335,7 +335,7 @@ const WelcomeBrowserWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximize
                 <h3 style={{ margin: 0, color: '#EBCB8B', fontSize: '1.05rem' }}>Education</h3>
               </div>
               <p style={{ margin: 0, lineHeight: 1.6 as any, color: '#D8DEE9' }}>
-                Communication and Network Engineering at <strong style={{ color: '#D08770' }}>ENIG</strong>: architecture, optimisations, AI, low-level programming, networking, security .
+                Communication and Network Engineering at <strong style={{ color: '#D08770' }}>ENIG</strong>: Network Security, Web Development, Artificial Intelligence, Telecommunication, and Embedded Systems.
               </p>
             </div>
           </div>
