@@ -62,7 +62,7 @@ const socials = [
   {
     id: 1,
     title: "GitHub",
-    url: "https://github.com/abdannassermbarki",
+    url: "https://github.com/theMastermind123",
     tab: 3,
   },
   {
