@@ -41,7 +41,7 @@ const DesktopShortcuts: React.FC<Props> = ({ onOpenTerminal, onOpenWelcome, onOp
       <DesktopShortcut label="Browser" onOpen={onOpenWelcome} icon={Icons.Browser} active={activeBrowser} />
       <DesktopShortcut label="Terminal" onOpen={onOpenTerminal} icon={Icons.Terminal} active={activeTerminal} />
       <DesktopShortcut label="LinkedIn" href="https://www.linkedin.com/in/abdannasser-mbarki-499b241ba/" icon={Icons.LinkedIn} />
-      <DesktopShortcut label="GitHub" href="https://github.com/abdannassermbarki" icon={Icons.GitHub} />
+      <DesktopShortcut label="GitHub" href="https://github.com/theMastermind123" icon={Icons.GitHub} />
       <DesktopShortcut label="Blog" href="https://dev.to/abdannassermbarki" icon={Icons.Blog} />
       <DesktopShortcut label="Resume" onOpen={onOpenResume} icon={Icons.PDF} active={activeResume} />
     </Grid>
