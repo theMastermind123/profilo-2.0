@@ -245,7 +245,7 @@ const WelcomeBrowserWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximize
                 opacity: 0.95
               }}>ICT Student in ENIG</p>
               <div role="group" aria-label="Quick links" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '12px' }}>
-                <a href="https://github.com/abdannassermbarki" target="_blank" rel="noreferrer" style={{
+                <a href="https://github.com/theMastermind123" target="_blank" rel="noreferrer" style={{
                   textDecoration: 'none',
                   color: '#88C0D0',
                   background: 'rgba(136, 192, 208, 0.15)',
