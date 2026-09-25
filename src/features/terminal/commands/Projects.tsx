@@ -3,7 +3,7 @@ import {
   checkRedirect,
   getCurrentCmdArry,
   isArgInvalid,
-} from "../../utils/funcs";
+} from "@/utils/funcs";
 import {
   ProjectContainer,
   ProjectDesc,
@@ -12,6 +12,7 @@ import {
 } from "../styles/Projects.styled";
 import { termContext } from "../Terminal";
 import Usage from "../Usage";
+import portfolio from "@/config/portfolio";
 
 const Projects: React.FC = () => {
   const { arg, history, rerender, executeCommand } = useContext(termContext);
@@ -35,7 +36,7 @@ const Projects: React.FC = () => {
 
   /* ===== check arg is valid ===== */
   const checkArg = () =>
-    isArgInvalid(arg, "go", ["1", "2", "3", "4"]) ? (
+    isArgInvalid(arg, "go", projects.map(p => String(p.id))) ? (
       <Usage cmd="projects" />
     ) : null;
 
@@ -44,8 +45,12 @@ const Projects: React.FC = () => {
   ) : (
     <div data-testid="projects">
       <ProjectsIntro>
-        “Talk is cheap. Show me the code”? I got you! <br />
-        Here are some of my projects you shouldn't miss
+        {projectsIntro.map((line, i) => (
+          <span key={i}>
+            {i > 0 && <br />}
+            {line}
+          </span>
+        ))}
       </ProjectsIntro>
       {projects.map(({ id, title, desc, url }) => (
         <ProjectContainer key={id}>
@@ -63,14 +68,7 @@ const Projects: React.FC = () => {
   );
 };
 
-const projects = [
-  {
-    id: 1,
-    title: "Needs to be updated with my new projects",
-    desc: "for now view my GitHub repositories.",
-    url: "https://github.com/AbdannasserMbarki?tab=repositories",
-  },
- 
-];
+const projectsIntro = portfolio.projects.intro;
+const projects = portfolio.projects.items;
 
 export default Projects;

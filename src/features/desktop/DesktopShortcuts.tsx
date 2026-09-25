@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import DesktopShortcut, { Icons } from "./DesktopShortcut";
+import portfolio from "@/config/portfolio";
+import type { ShortcutWindow } from "@/config/portfolio";
 
 type Props = {
   onOpenTerminal: () => void;
@@ -36,14 +38,34 @@ const Grid = styled.div<{ hidden?: boolean; mobileExpanded?: boolean }>`
 `;
 
 const DesktopShortcuts: React.FC<Props> = ({ onOpenTerminal, onOpenWelcome, onOpenResume, hidden, activeTerminal, activeBrowser, activeResume, mobileExpanded }) => {
+  const windowOpeners: Record<ShortcutWindow, () => void> = {
+    browser: onOpenWelcome,
+    terminal: onOpenTerminal,
+    resume: onOpenResume,
+  };
+  const windowActive: Record<ShortcutWindow, boolean | undefined> = {
+    browser: activeBrowser,
+    terminal: activeTerminal,
+    resume: activeResume,
+  };
+
   return (
     <Grid hidden={hidden} mobileExpanded={mobileExpanded}>
-      <DesktopShortcut label="Browser" onOpen={onOpenWelcome} icon={Icons.Browser} active={activeBrowser} />
-      <DesktopShortcut label="Terminal" onOpen={onOpenTerminal} icon={Icons.Terminal} active={activeTerminal} />
-      <DesktopShortcut label="LinkedIn" href="https://www.linkedin.com/in/abdannasser-mbarki-499b241ba/" icon={Icons.LinkedIn} />
-      <DesktopShortcut label="GitHub" href="https://github.com/theMastermind123" icon={Icons.GitHub} />
-      <DesktopShortcut label="Blog" href="https://dev.to/abdannassermbarki" icon={Icons.Blog} />
-      <DesktopShortcut label="Resume" onOpen={onOpenResume} icon={Icons.PDF} active={activeResume} />
+      {portfolio.desktop.shortcuts.map((shortcut) => {
+        const opener = shortcut.window ? windowOpeners[shortcut.window] : undefined;
+        const active = shortcut.window ? windowActive[shortcut.window] : undefined;
+        const href = shortcut.window ? undefined : shortcut.href;
+        return (
+          <DesktopShortcut
+            key={shortcut.label}
+            label={shortcut.label}
+            icon={Icons[shortcut.icon]}
+            onOpen={opener}
+            href={href}
+            active={active}
+          />
+        );
+      })}
     </Grid>
   );
 };

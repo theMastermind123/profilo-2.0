@@ -1,7 +1,20 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
+import portfolio from "@/config/portfolio";
 
-// Resume window with integrated PDF viewer
+// Simple browser-like window that is draggable/resizable and shows a welcome message
+
+const identity = portfolio.identity;
+const browser = portfolio.browser;
+
+/** Convert a #RRGGBB hex to an rgba() string with the given alpha. */
+const hexToRgba = (hex: string, alpha: number): string => {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 type Props = {
   onClose: () => void;
@@ -33,9 +46,9 @@ const Frame = styled.div<{ x?:number; y?:number; width?:number; height?:number; 
     inset: 0; margin: 0; max-width: none; width: 100vw; height: 100vh; border-radius: 0;
   `}
   ${({ maximized, x, y, width, height }) => !maximized && css`
-    left: ${x ?? 160}px; top: ${y ?? 80}px; width: ${width ?? 900}px; height: ${height ?? 560}px;
+    left: ${x ?? 140}px; top: ${y ?? 60}px; width: ${width ?? 900}px; height: ${height ?? 560}px;
   `}
-  z-index: ${({ zIndex }) => zIndex ?? 400};
+  z-index: ${({ zIndex }) => zIndex ?? 200}; /* above desktop icons but below modals */
   transition: ${({ isTransforming }) => isTransforming ? 'left 180ms ease, top 180ms ease, width 180ms ease, height 180ms ease, border-radius 180ms ease' : 'none'};
 `;
 
@@ -72,12 +85,10 @@ const ControlButton = styled.button<{ variant?: 'min'|'max'|'close' }>`
 
 const Toolbar = styled.div`
   ${({ theme }) => theme.backgroundImage && `
-    height: 36px; display:flex; align-items:center; padding: 0 12px 0 16px;
+    height: 36px; display:flex; align-items:center; padding: 0 16px;
     background: rgba(24, 24, 24, 0.85);
     border-bottom: 1px solid rgba(255,255,255,0.08);
     font-family: system-ui, -apple-system, sans-serif;
-    justify-content: space-between;
-    gap: 12px;
   `}
 `;
 
@@ -86,35 +97,14 @@ const LocationBar = styled.div`
   display:flex; align-items:center; padding: 0 12px; color:#ECEFF4; font-size:13px;
   border: 1px solid rgba(255,255,255,0.08);
   font-weight: 400;
-  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
-`;
-
-const Actions = styled.div`
-  display:flex; align-items:center; gap: 8px;
-`;
-
-const DownloadLink = styled.a`
-  display:inline-flex; align-items:center; gap: 6px;
-  height: 28px; padding: 0 10px; border-radius: 6px;
-  color:#ECEFF4; text-decoration:none; font-size:12px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.08);
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
-  &:hover { background: rgba(255,255,255,0.1); }
-  &:active { transform: translateY(1px); }
 `;
 
 const Content = styled.div<{ maximized?: boolean }>`
   height: ${({ maximized }) => maximized ? 'calc(100vh - 32px - 36px)' : 'calc(100% - 32px - 36px)'};
-  overflow:hidden;
+  padding: 22px 24px; color:#ECEFF4; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  overflow:auto;
 `;
 
-const PDFContainer = styled.div`
-  width: 100%; height: 100%;
-  & iframe, & embed { width: 100%; height: 100%; border: 0; }
-`;
-
-// Resize handles
 const Handle = styled.div<{ pos: 'n'|'s'|'e'|'w'|'ne'|'nw'|'se'|'sw' }>`
   position:absolute; z-index:5;
   ${({ pos }) => pos === 'n' && css`top: -2px; left: 6px; right: 6px; height: 6px; cursor: ns-resize;`}
@@ -130,7 +120,7 @@ const Handle = styled.div<{ pos: 'n'|'s'|'e'|'w'|'ne'|'nw'|'se'|'sw' }>`
 const MIN_W = 520; const MIN_H = 340;
 const clamp = (v:number, min:number, max:number) => Math.max(min, Math.min(max, v));
 
-const ResumeWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximized=false, onToggleMaximize, x=160, y=80, width=900, height=560, onMove, onResize, visible=true, onFocus, zIndex }) => {
+const WelcomeBrowserWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximized=false, onToggleMaximize, x=140, y=60, width=900, height=560, onMove, onResize, visible=true, onFocus, zIndex }) => {
   const posRef = useRef({ x, y });
   const sizeRef = useRef({ width, height });
   useEffect(() => { posRef.current = { x, y }; }, [x, y]);
@@ -187,12 +177,10 @@ const ResumeWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximized=false,
     window.addEventListener('mouseup', onMouseUp);
   };
 
-  const pdfUrl = "/Abdannasser_Mbarki_Resume.pdf"; // Ensure this file exists in public root
-
   return (
     <Frame x={x} y={y} width={width} height={height} maximized={isMaximized} hidden={!visible} isTransforming={!dragging.current && !resizing.current} zIndex={zIndex}>
       <TitleBar onMouseDown={(e) => { startDrag(e); onFocus && onFocus(); }}>
-        <WindowTitle>Resume</WindowTitle>
+        <WindowTitle>{browser.windowTitle}</WindowTitle>
         <WindowControls aria-label="Window controls">
           {onMinimize && (
             <ControlButton variant='min' title='Minimize' aria-label='Minimize' onClick={onMinimize}>
@@ -224,26 +212,118 @@ const ResumeWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximized=false,
       )}
 
       <Toolbar>
-        <LocationBar>{pdfUrl}</LocationBar>
-        <Actions>
-          <DownloadLink href={pdfUrl} download>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden>
-              <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M5 21h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-            Download
-          </DownloadLink>
-        </Actions>
+        <LocationBar>{browser.locationBar}</LocationBar>
       </Toolbar>
 
       <Content maximized={isMaximized}>
-        <PDFContainer>
-          <iframe src={`${pdfUrl}#toolbar=1&navpanes=0&scrollbar=1&view=FitH`} title="Resume PDF" />
-        </PDFContainer>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '24px',
+          animation: 'fadeInUp 0.8s ease-out'
+        }}>
+          {/* Hero */}
+          <section style={{
+            display: 'grid',
+            gridTemplateColumns: '120px 1fr',
+            gap: '20px',
+            alignItems: 'center'
+          }}>
+            <img
+              src={identity.avatar}
+              alt={identity.name}
+              style={{
+                width: '120px',
+                height: '120px',
+                objectFit: 'cover',
+                borderRadius: '14px',
+                boxShadow: '0 14px 30px rgba(0,0,0,0.35)',
+                border: '1px solid rgba(255,255,255,0.12)'
+              }}
+            />
+            <div>
+              <h1 style={{
+                margin: 0,
+                fontSize: '2.2rem',
+                background: 'linear-gradient(135deg, #88C0D0 0%, #5E81AC 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: 800,
+                letterSpacing: '-0.02em'
+              }}>{identity.name}</h1>
+              <p style={{
+                margin: '6px 0 0 0',
+                fontSize: '1.05rem',
+                color: '#D8DEE9',
+                opacity: 0.95
+              }}>{browser.hero.subtitle}</p>
+              <div role="group" aria-label="Quick links" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '12px' }}>
+                {browser.hero.quickLinks.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      textDecoration: 'none',
+                      color: link.color,
+                      background: hexToRgba(link.accent, 0.15),
+                      padding: '8px 12px',
+                      borderRadius: '999px',
+                      border: `1px solid ${hexToRgba(link.accent, 0.35)}`,
+                      fontSize: '0.92rem'
+                    }}
+                  >{link.label}</a>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Highlight cards */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '20px',
+            marginTop: '6px'
+          }}>
+            {browser.cards.map((card) => (
+              <div
+                key={card.title}
+                style={{
+                  background: `linear-gradient(135deg, ${hexToRgba(card.accent, 0.10)} 0%, ${hexToRgba(card.accentAlt, 0.10)} 100%)`,
+                  border: `1px solid ${hexToRgba(card.accent, 0.25)}`,
+                  borderRadius: '14px',
+                  padding: '18px',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                  cursor: 'pointer'
+                }}
+                onClick={() => window.open(card.link, '_blank')}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = `0 14px 30px ${hexToRgba(card.accent, 0.18)}`; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', gap: '10px' }}>
+                  <span style={{ fontSize: '1.5rem' }}>{card.emoji}</span>
+                  <h3 style={{ margin: 0, color: card.accent, fontSize: '1.05rem' }}>{card.title}</h3>
+                </div>
+                <p style={{ margin: 0, lineHeight: 1.6 as any, color: '#D8DEE9' }}>
+                  {card.body}
+                  {card.highlight && <strong style={{ color: card.highlightColor }}>{card.highlight}</strong>}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <style>{`
+          @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
       </Content>
     </Frame>
   );
 };
 
-export default ResumeWindow;
+export default WelcomeBrowserWindow;
 

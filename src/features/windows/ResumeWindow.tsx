@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
+import portfolio from "@/config/portfolio";
 
-// Simple browser-like window that is draggable/resizable and shows a welcome message
+// Resume window with integrated PDF viewer
 
 type Props = {
   onClose: () => void;
@@ -33,9 +34,9 @@ const Frame = styled.div<{ x?:number; y?:number; width?:number; height?:number; 
     inset: 0; margin: 0; max-width: none; width: 100vw; height: 100vh; border-radius: 0;
   `}
   ${({ maximized, x, y, width, height }) => !maximized && css`
-    left: ${x ?? 140}px; top: ${y ?? 60}px; width: ${width ?? 900}px; height: ${height ?? 560}px;
+    left: ${x ?? 160}px; top: ${y ?? 80}px; width: ${width ?? 900}px; height: ${height ?? 560}px;
   `}
-  z-index: ${({ zIndex }) => zIndex ?? 200}; /* above desktop icons but below modals */
+  z-index: ${({ zIndex }) => zIndex ?? 400};
   transition: ${({ isTransforming }) => isTransforming ? 'left 180ms ease, top 180ms ease, width 180ms ease, height 180ms ease, border-radius 180ms ease' : 'none'};
 `;
 
@@ -72,10 +73,12 @@ const ControlButton = styled.button<{ variant?: 'min'|'max'|'close' }>`
 
 const Toolbar = styled.div`
   ${({ theme }) => theme.backgroundImage && `
-    height: 36px; display:flex; align-items:center; padding: 0 16px;
+    height: 36px; display:flex; align-items:center; padding: 0 12px 0 16px;
     background: rgba(24, 24, 24, 0.85);
     border-bottom: 1px solid rgba(255,255,255,0.08);
     font-family: system-ui, -apple-system, sans-serif;
+    justify-content: space-between;
+    gap: 12px;
   `}
 `;
 
@@ -84,14 +87,35 @@ const LocationBar = styled.div`
   display:flex; align-items:center; padding: 0 12px; color:#ECEFF4; font-size:13px;
   border: 1px solid rgba(255,255,255,0.08);
   font-weight: 400;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+`;
+
+const Actions = styled.div`
+  display:flex; align-items:center; gap: 8px;
+`;
+
+const DownloadLink = styled.a`
+  display:inline-flex; align-items:center; gap: 6px;
+  height: 28px; padding: 0 10px; border-radius: 6px;
+  color:#ECEFF4; text-decoration:none; font-size:12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  &:hover { background: rgba(255,255,255,0.1); }
+  &:active { transform: translateY(1px); }
 `;
 
 const Content = styled.div<{ maximized?: boolean }>`
   height: ${({ maximized }) => maximized ? 'calc(100vh - 32px - 36px)' : 'calc(100% - 32px - 36px)'};
-  padding: 22px 24px; color:#ECEFF4; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  overflow:auto;
+  overflow:hidden;
 `;
 
+const PDFContainer = styled.div`
+  width: 100%; height: 100%;
+  & iframe, & embed { width: 100%; height: 100%; border: 0; }
+`;
+
+// Resize handles
 const Handle = styled.div<{ pos: 'n'|'s'|'e'|'w'|'ne'|'nw'|'se'|'sw' }>`
   position:absolute; z-index:5;
   ${({ pos }) => pos === 'n' && css`top: -2px; left: 6px; right: 6px; height: 6px; cursor: ns-resize;`}
@@ -107,7 +131,7 @@ const Handle = styled.div<{ pos: 'n'|'s'|'e'|'w'|'ne'|'nw'|'se'|'sw' }>`
 const MIN_W = 520; const MIN_H = 340;
 const clamp = (v:number, min:number, max:number) => Math.max(min, Math.min(max, v));
 
-const WelcomeBrowserWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximized=false, onToggleMaximize, x=140, y=60, width=900, height=560, onMove, onResize, visible=true, onFocus, zIndex }) => {
+const ResumeWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximized=false, onToggleMaximize, x=160, y=80, width=900, height=560, onMove, onResize, visible=true, onFocus, zIndex }) => {
   const posRef = useRef({ x, y });
   const sizeRef = useRef({ width, height });
   useEffect(() => { posRef.current = { x, y }; }, [x, y]);
@@ -164,10 +188,12 @@ const WelcomeBrowserWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximize
     window.addEventListener('mouseup', onMouseUp);
   };
 
+  const pdfUrl = portfolio.resume.pdfPath; // Ensure this file exists in public root
+
   return (
     <Frame x={x} y={y} width={width} height={height} maximized={isMaximized} hidden={!visible} isTransforming={!dragging.current && !resizing.current} zIndex={zIndex}>
       <TitleBar onMouseDown={(e) => { startDrag(e); onFocus && onFocus(); }}>
-        <WindowTitle>Browser</WindowTitle>
+        <WindowTitle>Resume</WindowTitle>
         <WindowControls aria-label="Window controls">
           {onMinimize && (
             <ControlButton variant='min' title='Minimize' aria-label='Minimize' onClick={onMinimize}>
@@ -199,158 +225,26 @@ const WelcomeBrowserWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximize
       )}
 
       <Toolbar>
-        <LocationBar>https://abdannassermbarki.tn</LocationBar>
+        <LocationBar>{pdfUrl}</LocationBar>
+        <Actions>
+          <DownloadLink href={pdfUrl} download>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <path d="M12 3v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M5 21h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            Download
+          </DownloadLink>
+        </Actions>
       </Toolbar>
 
       <Content maximized={isMaximized}>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '24px',
-          animation: 'fadeInUp 0.8s ease-out'
-        }}>
-          {/* Hero */}
-          <section style={{
-            display: 'grid',
-            gridTemplateColumns: '120px 1fr',
-            gap: '20px',
-            alignItems: 'center'
-          }}>
-            <img
-              src="/abdannassermbarki.jpg"
-              alt="Abdannasser Mbarki"
-              style={{
-                width: '120px',
-                height: '120px',
-                objectFit: 'cover',
-                borderRadius: '14px',
-                boxShadow: '0 14px 30px rgba(0,0,0,0.35)',
-                border: '1px solid rgba(255,255,255,0.12)'
-              }}
-            />
-            <div>
-              <h1 style={{
-                margin: 0,
-                fontSize: '2.2rem',
-                background: 'linear-gradient(135deg, #88C0D0 0%, #5E81AC 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontWeight: 800,
-                letterSpacing: '-0.02em'
-              }}>Abdannasser Mbarki</h1>
-              <p style={{
-                margin: '6px 0 0 0',
-                fontSize: '1.05rem',
-                color: '#D8DEE9',
-                opacity: 0.95
-              }}>ICT Student in ENIG</p>
-              <div role="group" aria-label="Quick links" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '12px' }}>
-                <a href="https://github.com/theMastermind123" target="_blank" rel="noreferrer" style={{
-                  textDecoration: 'none',
-                  color: '#88C0D0',
-                  background: 'rgba(136, 192, 208, 0.15)',
-                  padding: '8px 12px',
-                  borderRadius: '999px',
-                  border: '1px solid rgba(136,192,208,0.35)',
-                  fontSize: '0.92rem'
-                }}>GitHub</a>
-                <a href="https://www.linkedin.com/in/abdannasser-mbarki-499b241ba/" target="_blank" rel="noreferrer" style={{
-                  textDecoration: 'none', color: '#A3BE8C', background: 'rgba(163, 190, 140, 0.15)', padding: '8px 12px', borderRadius: '999px', border: '1px solid rgba(163,190,140,0.35)', fontSize: '0.92rem'
-                }}>LinkedIn</a>
-                <a href="https://dev.to/abdannassermbarki" target="_blank" rel="noreferrer" style={{
-                  textDecoration: 'none', color: '#B48EAD', background: 'rgba(180, 142, 173, 0.15)', padding: '8px 12px', borderRadius: '999px', border: '1px solid rgba(180,142,173,0.35)', fontSize: '0.92rem'
-                }}>Blog</a>
-                <a href="/Abdannasser_Mbarki_Resume.pdf" target="_blank" rel="noreferrer" style={{
-                  textDecoration: 'none', color: '#EBCB8B', background: 'rgba(235, 203, 139, 0.15)', padding: '8px 12px', borderRadius: '999px', border: '1px solid rgba(235,203,139,0.35)', fontSize: '0.92rem'
-                }}>Resume</a>
-              </div>
-            </div>
-          </section>
-
-          {/* Highlight cards */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '20px',
-            marginTop: '6px'
-          }}>
-            <div
-              style={{
-                background: 'linear-gradient(135deg, rgba(136, 192, 208, 0.10) 0%, rgba(94, 129, 172, 0.10) 100%)',
-                border: '1px solid rgba(136, 192, 208, 0.25)',
-                borderRadius: '14px',
-                padding: '18px',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                cursor: 'pointer'
-              }}
-              onClick={() => window.open('https://dev.to/abdannassermbarki', '_blank')}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 14px 30px rgba(136, 192, 208, 0.18)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', gap: '10px' }}>
-                <span style={{ fontSize: '1.5rem' }}>🛡️</span>
-                <h3 style={{ margin: 0, color: '#88C0D0', fontSize: '1.05rem' }}>Security field</h3>
-              </div>
-              <p style={{ margin: 0, lineHeight: 1.6 as any, color: '#D8DEE9' }}>
-                Participating CTFs. Founder of the security club <strong style={{ color: '#A3BE8C' }}>Securinets ENIG</strong>.
-              </p>
-            </div>
-
-            <div
-              style={{
-                background: 'linear-gradient(135deg, rgba(163, 190, 140, 0.10) 0%, rgba(191, 97, 106, 0.10) 100%)',
-                border: '1px solid rgba(163, 190, 140, 0.25)',
-                borderRadius: '14px',
-                padding: '18px',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                cursor: 'pointer'
-              }}
-              onClick={() => window.open('https://www.linkedin.com/in/abdannasser-mbarki-499b241ba/', '_blank')}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 14px 30px rgba(163, 190, 140, 0.18)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', gap: '10px' }}>
-                <span style={{ fontSize: '1.5rem' }}>💼</span>
-                <h3 style={{ margin: 0, color: '#A3BE8C', fontSize: '1.05rem' }}>Professional Experience</h3>
-              </div>
-              <p style={{ margin: 0, lineHeight: 1.6 as any, color: '#D8DEE9' }}>
-                Software developpment, reverse engineering, game developpment, agentic systems developpment: <strong style={{ color: '#EBCB8B' }}>A multidisciplinary background in Network Engineering and Full-stack Development</strong>. </p>
-            </div>
-
-            <div
-              style={{
-                background: 'linear-gradient(135deg, rgba(235, 203, 139, 0.10) 0%, rgba(208, 135, 112, 0.10) 100%)',
-                border: '1px solid rgba(235, 203, 139, 0.25)',
-                borderRadius: '14px',
-                padding: '18px',
-                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                cursor: 'pointer'
-              }}
-              onClick={() => window.open('https://enig.rnu.tn/', '_blank')}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = '0 14px 30px rgba(235, 203, 139, 0.18)'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', gap: '10px' }}>
-                <span style={{ fontSize: '1.5rem' }}>🏫</span>
-                <h3 style={{ margin: 0, color: '#EBCB8B', fontSize: '1.05rem' }}>Education</h3>
-              </div>
-              <p style={{ margin: 0, lineHeight: 1.6 as any, color: '#D8DEE9' }}>
-                Communication and Network Engineering at <strong style={{ color: '#D08770' }}>ENIG</strong>: Network Security, Web Development, Artificial Intelligence, Telecommunication, and Embedded Systems.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <style>{`
-          @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-        `}</style>
+        <PDFContainer>
+          <iframe src={`${pdfUrl}#toolbar=1&navpanes=0&scrollbar=1&view=FitH`} title="Resume PDF" />
+        </PDFContainer>
       </Content>
     </Frame>
   );
 };
 
-export default WelcomeBrowserWindow;
+export default ResumeWindow;
 

@@ -6,7 +6,7 @@ import {
   KeyContainer,
 } from "../styles/Help.styled";
 import { commands, termContext } from "../Terminal";
-import { generateTabs } from "../../utils/funcs";
+import { generateTabs } from "@/utils/funcs";
 import { useContext } from "react";
 
 const Help: React.FC = () => {

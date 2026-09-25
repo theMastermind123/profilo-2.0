@@ -1,5 +1,5 @@
 import _ from "lodash";
-import theme from "../components/styles/themes";
+import portfolio from "@/config/portfolio";
 
 /**
  * Generates html tabs
@@ -37,6 +37,15 @@ export const getCurrentCmdArry = (history: string[]) =>
   _.split(history[0].trim(), " ");
 
 /**
+ * All numeric ids that can be opened with `<cmd> go <id>`
+ * (derived from the configured projects + socials).
+ */
+const redirectIds = [
+  ...portfolio.projects.items.map(p => p.id),
+  ...portfolio.socials.items.map(s => s.id),
+];
+
+/**
  * Check current render makes redirect
  * @param {boolean} rerender - is submitted or not
  * @param {string[]} currentCommand - current submitted command
@@ -53,17 +62,11 @@ export const checkRedirect = (
   currentCommand[1] === "go" && // first arg is 'go'
   currentCommand.length > 1 && // current command has arg
   currentCommand.length < 4 && // if num of arg is valid (not `projects go 1 sth`)
-  _.includes([1, 2, 3, 4], parseInt(currentCommand[2])); // arg last part is one of id
+  _.includes(redirectIds, parseInt(currentCommand[2])); // arg last part is a known id
 
 /**
- * Check current render makes redirect for theme
- * @param {boolean} rerender - is submitted or not
- * @param {string[]} currentCommand - current submitted command
- * @param {string[]} themes - the command of the function
- * @returns {boolean} redirect - true | false
- */
-/**
  * Theme switching is disabled in Kali-only mode
+ * @returns {boolean} always false
  */
 export const checkThemeSwitch = (
   rerender: boolean,
@@ -101,21 +104,16 @@ export const argTab = (
 
   // 7) if input is 'socials go '
   else if (_.startsWith(inputVal, "socials go ")) {
-    ["1.Github", "2.Facebook", "3.Linkedin"].forEach(t => {
-      hintsCmds = [...hintsCmds, t];
+    portfolio.socials.items.forEach(s => {
+      hintsCmds = [...hintsCmds, `${s.id}.${s.label}`];
     });
     return hintsCmds;
   }
 
   // 8) if input is 'projects go '
   else if (_.startsWith(inputVal, "projects go ")) {
-    [
-      "1.Blog",
-      "2.Radio Medenine Website",
-      "3.Deagle",
-      "4.Writeups",
-    ].forEach(t => {
-      hintsCmds = [...hintsCmds, t];
+    portfolio.projects.items.forEach(p => {
+      hintsCmds = [...hintsCmds, `${p.id}.${p.title}`];
     });
     return hintsCmds;
   }

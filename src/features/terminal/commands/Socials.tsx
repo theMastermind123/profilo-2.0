@@ -6,9 +6,10 @@ import {
   generateTabs,
   getCurrentCmdArry,
   isArgInvalid,
-} from "../../utils/funcs";
+} from "@/utils/funcs";
 import { termContext } from "../Terminal";
 import Usage from "../Usage";
+import portfolio from "@/config/portfolio";
 
 const Socials: React.FC = () => {
   const { arg, history, rerender, executeCommand } = useContext(termContext);
@@ -32,7 +33,7 @@ const Socials: React.FC = () => {
 
   /* ===== check arg is valid ===== */
   const checkArg = () =>
-    isArgInvalid(arg, "go", ["1", "2", "3", "4"]) ? (
+    isArgInvalid(arg, "go", socials.map(s => String(s.id))) ? (
       <Usage cmd="socials" />
     ) : null;
 
@@ -40,14 +41,14 @@ const Socials: React.FC = () => {
     checkArg()
   ) : (
     <HelpWrapper data-testid="socials">
-      <ProjectsIntro>Here are my social links</ProjectsIntro>
-      {socials.map(({ id, title, url, tab }) => (
-        <CmdList key={title}>
+      <ProjectsIntro>{socialsIntro}</ProjectsIntro>
+      {socials.map(({ id, label, url, tab }) => (
+        <CmdList key={label}>
           <Cmd
             onClick={() => handleSocialClick(url)}
             style={{ cursor: 'pointer' }}
           >
-            {`${id}. ${title}`}
+            {`${id}. ${label}`}
           </Cmd>
           {generateTabs(tab)}
           <CmdDesc>- {url}</CmdDesc>
@@ -58,25 +59,7 @@ const Socials: React.FC = () => {
   );
 };
 
-const socials = [
-  {
-    id: 1,
-    title: "GitHub",
-    url: "https://github.com/theMastermind123",
-    tab: 3,
-  },
-  {
-    id: 2,
-    title: "Linkedin",
-    url: "https://www.linkedin.com/in/abdannasser-mbarki-499b241ba/",
-    tab: 1,
-  },
-  {
-    id: 3,
-    title: "Blog",
-    url: "https://dev.to/abdannassermbarki",
-    tab: 5,
-  },
-];
+const socialsIntro = portfolio.socials.intro;
+const socials = portfolio.socials.items;
 
 export default Socials;

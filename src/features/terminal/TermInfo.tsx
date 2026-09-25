@@ -1,9 +1,11 @@
 import { User, WebsiteName, Wrapper } from "./styles/TerminalInfo.styled";
+import portfolio from "@/config/portfolio";
 
 const TermInfo = () => {
+  const { user, host } = portfolio.terminal;
   return (
     <Wrapper>
-      <User>kali</User>@<WebsiteName>kali</WebsiteName>:~$
+      <User>{user}</User>@<WebsiteName>{host}</WebsiteName>:~$
     </Wrapper>
   );
 };

@@ -1,12 +1,13 @@
 import { createContext, useEffect, useState } from "react";
 import { DefaultTheme, ThemeProvider } from "styled-components";
-import { useTheme } from "./hooks/useTheme";
-import GlobalStyle from "./components/styles/GlobalStyle";
-import TerminalWindow from "./components/TerminalWindow";
-import DesktopShortcuts from "./components/DesktopShortcuts";
-import WelcomeBrowserWindow from "./components/WelcomeBrowserWindow";
-import ResumeWindow from "./components/ResumeWindow";
-import FullscreenToggle from "./components/FullscreenToggle";
+import { useTheme } from "@/hooks/useTheme";
+import GlobalStyle from "@/styles/GlobalStyle";
+import TerminalWindow from "@/features/windows/TerminalWindow";
+import DesktopShortcuts from "@/features/desktop/DesktopShortcuts";
+import WelcomeBrowserWindow from "@/features/windows/WelcomeBrowserWindow";
+import ResumeWindow from "@/features/windows/ResumeWindow";
+import FullscreenToggle from "@/features/desktop/FullscreenToggle";
+import portfolio from "@/config/portfolio";
 
 export const themeContext = createContext<
   ((switchTheme: DefaultTheme) => void) | null
@@ -231,7 +232,7 @@ function App() {
 
   return (
     <>
-      <h1 className="sr-only" aria-label="Abdannasser Mbarki">Abdannasser Mbarki</h1>
+      <h1 className="sr-only" aria-label={portfolio.identity.name}>{portfolio.identity.name}</h1>
       {themeLoaded && (
         <ThemeProvider theme={selectedTheme}>
           <GlobalStyle />

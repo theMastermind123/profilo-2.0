@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled, { css } from "styled-components";
-import Terminal from "./Terminal";
+import Terminal from "@/features/terminal/Terminal";
 
 type Props = {
   onClose: () => void;
