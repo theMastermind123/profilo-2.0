@@ -28,6 +28,9 @@ const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
   body {
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
     background-color: ${({ theme }) => theme.backgroundImage ? 'transparent' : theme.colors?.body};
     ${({ theme }) => theme.backgroundImage && `
       background-image: url(${theme.backgroundImage});
@@ -79,9 +82,10 @@ const GlobalStyle = createGlobalStyle<{ theme: DefaultTheme }>`
     transition: background-color 9999s ease-in-out 0s;
   }
 
-  /* Optional: subtle selection color that doesn't create a solid block */
+  /* Selection tinted with the cyan accent so it reads as part of the theme */
   ::selection {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(0, 212, 255, 0.28);
+    color: #ECEFF4;
   }
   input[type=text]:focus-visible {
     outline: none;

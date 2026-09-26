@@ -15,10 +15,11 @@ export const ProjectTitle = styled.div`
   font-weight: 700;
   margin-bottom: 0.25rem;
   color: ${({ theme }) => theme.colors?.primary};
+  transition: text-shadow 0.15s ease, opacity 0.15s ease;
 
   &:hover {
     text-decoration: underline;
-    opacity: 0.8;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.45);
   }
 `;
 

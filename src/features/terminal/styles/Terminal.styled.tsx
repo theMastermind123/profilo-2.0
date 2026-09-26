@@ -45,6 +45,9 @@ export const Wrapper = styled.div`
 export const CmdNotFound = styled.div`
   margin-top: 0.25rem;
   margin-bottom: 1rem;
+  /* Error state reads clearly in the red accent with a faint glow */
+  color: ${({ theme }) => theme.colors?.secondary};
+  text-shadow: 0 0 10px rgba(255, 107, 107, 0.25);
 `;
 
 export const Empty = styled.div`
@@ -74,6 +77,9 @@ export const Form = styled.form`
 
 export const Input = styled.input`
   flex-grow: 1;
+  color: ${({ theme }) => theme.colors?.text[100]};
+  /* subtle cyan glow on the typed command, echoing the CRT theme */
+  text-shadow: 0 0 6px rgba(0, 212, 255, 0.15);
 
   @media (max-width: 550px) {
     min-width: 85%;
@@ -81,5 +87,12 @@ export const Input = styled.input`
 `;
 
 export const Hints = styled.span`
-  margin-right: 0.875rem;
+  display: inline-block;
+  margin: 0.125rem 0.5rem 0.125rem 0;
+  padding: 0.05rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: ${({ theme }) => theme.colors?.text[100]};
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 `;

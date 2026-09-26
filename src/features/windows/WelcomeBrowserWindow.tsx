@@ -33,13 +33,13 @@ const Frame = styled.div<{ x?:number; y?:number; width?:number; height?:number; 
   position: fixed;
   box-sizing: border-box;
   ${({ theme }) => theme.backgroundImage && `
-    background: rgba(0, 0, 0, 0.35);
-    border-radius: 12px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 14px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.12);
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px) saturate(1.1);
+    -webkit-backdrop-filter: blur(16px) saturate(1.1);
   `}
   ${({ hidden }) => hidden && css`display:none;`}
   ${({ maximized, theme }) => maximized && theme.backgroundImage && css`
@@ -216,98 +216,74 @@ const WelcomeBrowserWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximize
       </Toolbar>
 
       <Content maximized={isMaximized}>
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '24px',
-          animation: 'fadeInUp 0.8s ease-out'
-        }}>
+        <div className="bw-wrap">
           {/* Hero */}
-          <section style={{
-            display: 'grid',
-            gridTemplateColumns: '120px 1fr',
-            gap: '20px',
-            alignItems: 'center'
-          }}>
-            <img
-              src={identity.avatar}
-              alt={identity.name}
-              style={{
-                width: '120px',
-                height: '120px',
-                objectFit: 'cover',
-                borderRadius: '14px',
-                boxShadow: '0 14px 30px rgba(0,0,0,0.35)',
-                border: '1px solid rgba(255,255,255,0.12)'
-              }}
-            />
-            <div>
-              <h1 style={{
-                margin: 0,
-                fontSize: '2.2rem',
-                background: 'linear-gradient(135deg, #88C0D0 0%, #5E81AC 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontWeight: 800,
-                letterSpacing: '-0.02em'
-              }}>{identity.name}</h1>
-              <p style={{
-                margin: '6px 0 0 0',
-                fontSize: '1.05rem',
-                color: '#D8DEE9',
-                opacity: 0.95
-              }}>{browser.hero.subtitle}</p>
-              <div role="group" aria-label="Quick links" style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '12px' }}>
+          <section className="bw-hero">
+            <div className="bw-avatar-ring">
+              <img className="bw-avatar" src={identity.avatar} alt={identity.name} />
+            </div>
+            <div className="bw-hero-text">
+              <h1 className="bw-name">{identity.name}</h1>
+              <p className="bw-subtitle">{browser.hero.subtitle}</p>
+              <div className="bw-pills" role="group" aria-label="Quick links">
                 {browser.hero.quickLinks.map((link) => (
                   <a
                     key={link.label}
+                    className="bw-pill"
                     href={link.href}
                     target="_blank"
                     rel="noreferrer"
-                    style={{
-                      textDecoration: 'none',
-                      color: link.color,
-                      background: hexToRgba(link.accent, 0.15),
-                      padding: '8px 12px',
-                      borderRadius: '999px',
-                      border: `1px solid ${hexToRgba(link.accent, 0.35)}`,
-                      fontSize: '0.92rem'
-                    }}
-                  >{link.label}</a>
+                    style={
+                      {
+                        '--c': link.color,
+                        '--pill-bg': hexToRgba(link.accent, 0.16),
+                        '--pill-bg-hover': hexToRgba(link.accent, 0.28),
+                        '--pill-border': hexToRgba(link.accent, 0.42),
+                      } as React.CSSProperties
+                    }
+                  >
+                    {link.label}
+                  </a>
                 ))}
               </div>
             </div>
           </section>
 
           {/* Highlight cards */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '20px',
-            marginTop: '6px'
-          }}>
+          <div className="bw-cards">
             {browser.cards.map((card) => (
               <div
                 key={card.title}
-                style={{
-                  background: `linear-gradient(135deg, ${hexToRgba(card.accent, 0.10)} 0%, ${hexToRgba(card.accentAlt, 0.10)} 100%)`,
-                  border: `1px solid ${hexToRgba(card.accent, 0.25)}`,
-                  borderRadius: '14px',
-                  padding: '18px',
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                  cursor: 'pointer'
-                }}
+                className="bw-card"
+                role="button"
+                tabIndex={0}
+                aria-label={card.title}
+                style={
+                  {
+                    '--accent': card.accent,
+                    '--accent-alt': card.accentAlt,
+                    '--hl': card.highlightColor,
+                    '--card-bg': `linear-gradient(135deg, ${hexToRgba(card.accent, 0.16)} 0%, ${hexToRgba(card.accentAlt, 0.10)} 100%)`,
+                    '--card-border': hexToRgba(card.accent, 0.28),
+                    '--card-border-hover': hexToRgba(card.accent, 0.6),
+                    '--card-glow': hexToRgba(card.accent, 0.24),
+                  } as React.CSSProperties
+                }
                 onClick={() => window.open(card.link, '_blank')}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-3px)'; e.currentTarget.style.boxShadow = `0 14px 30px ${hexToRgba(card.accent, 0.18)}`; }}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    window.open(card.link, '_blank');
+                  }
+                }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', gap: '10px' }}>
-                  <span style={{ fontSize: '1.5rem' }}>{card.emoji}</span>
-                  <h3 style={{ margin: 0, color: card.accent, fontSize: '1.05rem' }}>{card.title}</h3>
+                <div className="bw-card-head">
+                  <span className="bw-card-emoji" aria-hidden>{card.emoji}</span>
+                  <h3 className="bw-card-title">{card.title}</h3>
                 </div>
-                <p style={{ margin: 0, lineHeight: 1.6 as any, color: '#D8DEE9' }}>
+                <p className="bw-card-body">
                   {card.body}
-                  {card.highlight && <strong style={{ color: card.highlightColor }}>{card.highlight}</strong>}
+                  {card.highlight && <strong className="bw-card-hl"> {card.highlight}</strong>}
                 </p>
               </div>
             ))}
@@ -315,10 +291,27 @@ const WelcomeBrowserWindow: React.FC<Props> = ({ onClose, onMinimize, isMaximize
         </div>
 
         <style>{`
-          @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
+          .bw-wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:26px;animation:fadeInUp .6s ease-out}
+          .bw-hero{display:grid;grid-template-columns:132px 1fr;gap:22px;align-items:center}
+          .bw-avatar-ring{width:132px;height:132px;border-radius:20px;padding:2px;background:linear-gradient(135deg,#88C0D0,#5E81AC);box-shadow:0 16px 34px rgba(0,0,0,.45)}
+          .bw-avatar{width:100%;height:100%;object-fit:cover;border-radius:18px;display:block;border:1px solid rgba(0,0,0,.35)}
+          .bw-name{margin:0;font-size:clamp(1.7rem,4vw,2.4rem);line-height:1.15;font-weight:800;letter-spacing:-.02em;background:linear-gradient(135deg,#88C0D0 0%,#5E81AC 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+          .bw-subtitle{margin:6px 0 0;font-size:1.05rem;color:#D8DEE9;opacity:.92}
+          .bw-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+          .bw-pill{text-decoration:none;color:var(--c);background:var(--pill-bg);padding:7px 14px;border-radius:999px;border:1px solid var(--pill-border);font-size:.9rem;font-weight:600;transition:transform .15s ease,background .15s ease,box-shadow .15s ease}
+          .bw-pill:hover{transform:translateY(-2px);background:var(--pill-bg-hover);box-shadow:0 8px 18px rgba(0,0,0,.35)}
+          .bw-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+          .bw-card{position:relative;overflow:hidden;background:var(--card-bg);border:1px solid var(--card-border);border-radius:16px;padding:18px 18px 18px 22px;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+          .bw-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--accent),var(--accent-alt))}
+          .bw-card:hover{transform:translateY(-4px);border-color:var(--card-border-hover);box-shadow:0 16px 32px var(--card-glow)}
+          .bw-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+          .bw-card-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+          .bw-card-emoji{font-size:1.5rem;line-height:1}
+          .bw-card-title{margin:0;color:var(--accent);font-size:1.08rem;font-weight:700}
+          .bw-card-body{margin:0;line-height:1.6;color:#D8DEE9;font-size:.95rem}
+          .bw-card-hl{color:var(--hl);font-weight:700}
+          @keyframes fadeInUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+          @media (max-width:560px){.bw-hero{grid-template-columns:1fr;justify-items:center;text-align:center}.bw-pills{justify-content:center}}
         `}</style>
       </Content>
     </Frame>

@@ -11,10 +11,11 @@ export const CmdList = styled.div`
 
 export const Cmd = styled.span`
   color: ${({ theme }) => theme.colors?.primary};
+  transition: text-shadow 0.15s ease, opacity 0.15s ease;
 
   &:hover {
     text-decoration: underline;
-    opacity: 0.8;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.45);
   }
 `;
 

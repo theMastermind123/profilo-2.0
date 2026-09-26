@@ -6,7 +6,7 @@ import portfolio from "@/config/portfolio";
 
 const Email: React.FC = () => {
   const { history, rerender } = useContext(termContext);
-  const { email } = portfolio.identity;
+  const { email, phone, location } = portfolio.identity;
 
   /* ===== get current command ===== */
   const currentCommand = _.split(history[0], " ");
@@ -21,16 +21,20 @@ const Email: React.FC = () => {
 
   return (
     <Wrapper>
-      <span
-        onClick={handleEmailClick}
-        style={{
-          cursor: 'pointer',
-          textDecoration: 'underline',
-          color: 'inherit'
-        }}
-      >
-        {email.display}
-      </span>
+      <p>
+        <span
+          onClick={handleEmailClick}
+          style={{
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            color: 'inherit'
+          }}
+        >
+          {email.display}
+        </span>
+      </p>
+      <p>{phone}</p>
+      <p>{location}</p>
     </Wrapper>
   );
 };

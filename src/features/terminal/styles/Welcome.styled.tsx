@@ -17,6 +17,8 @@ export const HeroContainer = styled.div`
 
 export const PreName = styled.pre`
   margin-top: 0.5rem;
+  color: ${({ theme }) => theme.colors?.primary};
+  text-shadow: 0 0 14px rgba(0, 212, 255, 0.35);
 
   @media (max-width: 550px) {
     display: none;
@@ -49,10 +51,11 @@ export const Seperator = styled.div`
 
 export const Cmd = styled.span`
   color: ${({ theme }) => theme.colors?.primary};
+  transition: text-shadow 0.15s ease, opacity 0.15s ease;
 
   &:hover {
     text-decoration: underline;
-    opacity: 0.8;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.45);
   }
 `;
 
@@ -62,8 +65,10 @@ export const Link = styled.a`
   line-height: 1.5rem;
   white-space: nowrap;
   border-bottom: 2px dashed ${({ theme }) => theme.colors?.secondary};
+  transition: border-bottom-color 0.15s ease, text-shadow 0.15s ease;
 
   &:hover {
     border-bottom-style: solid;
+    text-shadow: 0 0 10px rgba(255, 107, 107, 0.35);
   }
 `;

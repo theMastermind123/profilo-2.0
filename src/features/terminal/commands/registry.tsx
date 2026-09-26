@@ -4,11 +4,13 @@ import Clear from "./Clear";
 import Echo from "./Echo";
 import Education from "./Education";
 import Email from "./Email";
+import Experience from "./Experience";
 import GeneralOutput from "./GeneralOutput";
 import Help from "./Help";
 import History from "./History";
 import Projects from "./Projects";
 import Resume from "./Resume";
+import Skills from "./Skills";
 import Socials from "./Socials";
 import Welcome from "./Welcome";
 import { OutputContainer } from "../styles/Output.styled";
@@ -58,11 +60,13 @@ export const commandRegistry: Record<string, CommandEntry> = {
   echo: { acceptsArgs: true, render: () => <Echo /> },
   education: { render: () => <Education /> },
   email: { render: () => <Email /> },
+  experience: { render: () => <Experience /> },
   resume: { render: () => <Resume /> },
   help: { render: () => <Help /> },
   history: { render: () => <History /> },
   projects: { acceptsArgs: true, render: () => <Projects /> },
   pwd: { render: () => <GeneralOutput>{portfolio.terminal.homePath}</GeneralOutput> },
+  skills: { render: () => <Skills /> },
   socials: { acceptsArgs: true, render: () => <Socials /> },
   welcome: { render: () => <Welcome /> },
   whoami: { render: () => <GeneralOutput>{portfolio.terminal.whoami}</GeneralOutput> },
